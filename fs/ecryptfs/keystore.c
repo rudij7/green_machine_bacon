@@ -2529,3 +2529,4 @@ ecryptfs_add_global_auth_tok(struct ecryptfs_mount_crypt_stat *mount_crypt_stat,
 out:
 	return rc;
 }
+
