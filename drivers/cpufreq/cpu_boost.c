@@ -72,6 +72,8 @@ static void save_original_cpu_limits(void)
 
 	minfreq_orig = policy->user_policy.min;
 	maxfreq_orig = policy->user_policy.max;
+
+	cpufreq_cpu_put(policy);
 }
 
 static void set_new_minfreq(struct cpufreq_policy *policy,
@@ -85,14 +87,12 @@ static void restore_original_minfreq(void)
 	struct cpufreq_policy *policy = NULL;
 	unsigned int cpu = 0;
 
-	get_online_cpus();
 	for_each_online_cpu(cpu) {
 		policy = cpufreq_cpu_get(cpu);
 		set_new_minfreq(policy, minfreq_orig);
 		cpufreq_update_policy(cpu);
 		cpufreq_cpu_put(policy);
 	}
-	put_online_cpus();
 
 	boost_duration_ms = 0;
 	cpu_boosted = 0;
@@ -113,7 +113,6 @@ static void __cpuinit cpu_boost_main(struct work_struct *work)
 		save_original_cpu_limits();
 
 	if (boost_freq_khz) {
-
 		if (boost_freq_khz >= maxfreq_orig) {
 			if (maxfreq_orig <= 486000) {
 				boost_duration_ms = 0;
@@ -125,14 +124,12 @@ static void __cpuinit cpu_boost_main(struct work_struct *work)
 			minfreq = boost_freq_khz;
 
 		/* boost online CPUs */
-		get_online_cpus();
 		for_each_online_cpu(cpu) {
 			policy = cpufreq_cpu_get(cpu);
 			set_new_minfreq(policy, minfreq);
 			cpufreq_update_policy(cpu);
 			cpufreq_cpu_put(policy);
 		}
-		put_online_cpus();
 		cpu_boosted = 1;
 	}
 
