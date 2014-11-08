@@ -3,6 +3,7 @@
 #
 
 obj-y				+= mem.o random.o
+KBUILD_CFLAGS	+=-O3
 obj-$(CONFIG_TTY_PRINTK)	+= ttyprintk.o
 obj-y				+= misc.o
 obj-$(CONFIG_FRANDOM)     	+= frandom.o
