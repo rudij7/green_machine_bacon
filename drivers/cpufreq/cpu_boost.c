@@ -154,6 +154,38 @@ static void __cpuinit cpu_boost_main(struct work_struct *work)
 				msecs_to_jiffies(wait_ms));
 }
 
+
+static ssize_t cpu_boost_enabled_status_read(struct device *dev,
+		struct device_attribute *attr, char *buf)
+{
+	return sprintf(buf, "%u\n", enabled);
+}
+
+static ssize_t cpu_boost_enabled_status_write(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t size)
+{
+	unsigned int data;
+	if(sscanf(buf, "%u\n", &data) == 1) {
+		if (data == 1) cpu_boost_startup();
+		else if (data == 0) cpu_boost_shutdown();
+	}
+	return size;
+}
+
+static struct kobj_attribute cpu_boost_enabled = __ATTR(enabled, 0666, cpu_boost_enabled_status_read, cpu_boost_enabled_status_write);
+
+
+static struct attribute *cpu_boost_attributes[] = {
+	&cpu_boost_enabled.attr,
+	NULL
+};
+
+static struct attribute_group cpu_boost_attr_group = {
+    .attrs = cpu_boost_attributes,
+};
+
+struct kobject *cpu_boost_kobject;
+
 static int __init cpu_boost_init(void)
 {
 	INIT_DELAYED_WORK(&boost_work, cpu_boost_main);
