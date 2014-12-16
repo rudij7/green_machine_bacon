@@ -136,7 +136,7 @@ if [ -f arch/arm/boot/"$kerneltype" ]; then
 	find . -name "*.ko" -exec cp {} ozip/system/lib/modules \;
 	cd ozip
 	zip -r ../$buildname.zip .
-	mv ../$buildname.zip $output
+	mv ../$buildname.zip ../$output
 	cd ..
 	rm -rf out ozip/system
 	echo "Done..."
