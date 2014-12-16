@@ -140,6 +140,7 @@ if [ -f arch/arm/boot/"$kerneltype" ]; then
 	cd ..
 	rm -rf out ozip/system
 	echo "Done..."
+	rm -rf ozip/boot.img
 else
 	echo "Can't finish off zip..."
 	exit 0;
