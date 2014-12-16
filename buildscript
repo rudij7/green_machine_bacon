@@ -14,19 +14,22 @@ echo ' |  |  |  ||  _   ||  __|| |___ | || __ || __|'
 echo ' |  |  |  || |_|  || |__ |  _  || || || || __|'
 echo ' |__|__|__||____|_||____||_| |_||_||_||_||___|'
 echo
-echo ' 	       Compile Script by YoshiShaPow        '
-echo
+echo ' 	    Compile Script by YoshiShaPow        '
 
 # Tuneables
-defconfig=tgm_bacon_defconfig
+buildname="TGM-Lollipop-v1.0.0"
+defconfig="tgm_bacon_defconfig"
 jobs="8"
-toolchain="/home/yoshishapow/kernels/toolchains/cortex_a15/bin/arm-eabi-"
+toolchain="/home/yoshishapow/kernels/toolchains/cortex_a15/bin/arm-cortex_a15-linux-gnueabihf-"
 kerneltype="zImage"
-output="~/kernels/out/bacon"
-TGM_version="~(≧０≦)~TGM-v1"
+output="../out/bacon"
+ps=2048
+base=0x00000000
+ramdisk_offset=0x02000000
+tags_offset=0x01e00000
+cmdline="console=ttyHSL0,115200,n8 androidboot.hardware=bacon user_debug=31 msm_rtb.filter=0x3F ehci-hcd.park=3 androidboot.selinux=permissive"
 
 # Let's start
-export LOCALVERSION=$TGM_version
 export ARCH=arm
 export SUBARCH=arm
 export CROSS_COMPILE=$toolchain
@@ -38,6 +41,11 @@ do
 case "$cchoice" in
 	y|Y )
 		make clean && make mrproper
+		rm -rf ozip/boot.img
+		rm -rf arch/arm/boot/"$kerneltype"
+		mkdir -p ozip/system/lib/modules
+		rm -rf out
+		mkdir out
 		echo
 		echo "Done"
 		break
@@ -83,10 +91,10 @@ while read -p "Do you want to build (y/n)? " cchoice
 do
 case "$cchoice" in
 	y|Y )
-		
 		make -j$jobs
 		echo
 		echo "Done"
+		cp arch/arm/boot/"$kerneltype" out
 		break
 		;;
 	n|N )
@@ -100,21 +108,43 @@ case "$cchoice" in
 esac
 done
 
+
+if [ -f out/"$kerneltype" ]; then
+	echo "Making dt.img..."
+	echo
+	./dtbToolCM -2 -o out/dt.img -s 2048 -p scripts/dtc/ arch/arm/boot/
+	echo "dt.img created"
+else
+	echo "No build found..."
+	exit 0;
+fi
+
 echo
 
-if [[ -f $output/zImage ]]
-	then
-		echo 'TGM is Done'
-		echo 'Removing old img'
-		rm -f ../out/boot*
-		./bacon_ramdisk/dtbToolCM -2 -o ../bacon_ramdisk/split_img/boot.img-dtb -s 2048 -p ../tgm_bacon/scripts/dtc/ ../tgm_bacon/arch/arm/boot/
-		cp arch/arm/boot/zImage ../bacon_ramdisk/split_img/boot.img-zImage
-		cd ../bacon_ramdisk/
-		./repackimg.sh
-		cp ./image-new.img ../out/boot.img
-	else
-		echo 'Better fix something up! Build failed'
+if [ -f out/"$kerneltype" ]; then
+	echo "Making boot.img..."
+	echo
+	./mkbootimg --kernel out/"$kerneltype" --ramdisk resources/initramfs.img --cmdline "$cmdline" --base $base --pagesize $ps --ramdisk_offset $ramdisk_offset --tags_offset $tags_offset --dt out/dt.img --output ozip/boot.img
+else
+	echo "No $kerneltype found..."
+	exit 0;
 fi
+
+if [ -f arch/arm/boot/"$kerneltype" ]; then
+	rm -rf ozip/system
+	mkdir -p ozip/system/lib/modules
+	find . -name "*.ko" -exec cp {} ozip/system/lib/modules \;
+	cd ozip
+	zip -r ../$buildname.zip .
+	mv ../$buildname.zip $output
+	cd ..
+	rm -rf out ozip/system
+	echo "Done..."
+else
+	echo "Can't finish off zip..."
+	exit 0;
+fi
+
 DATE_END=$(date +"%s")
 DIFF=$(($DATE_END - $DATE_START))
 echo "Time: $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds."
