@@ -14,12 +14,12 @@ echo ' |  |  |  ||  _   ||  __|| |___ | || __ || __|'
 echo ' |  |  |  || |_|  || |__ |  _  || || || || __|'
 echo ' |__|__|__||____|_||____||_| |_||_||_||_||___|'
 echo
-echo ' 	    Compile Script by YoshiShaPow        '
+echo 'Compile Script by YoshiShaPow        '
 
 # Tuneables
 buildname="TGM-Lollipop-v1.0.0"
 defconfig="tgm_bacon_defconfig"
-jobs="8"
+jobs="6"
 toolchain="/home/yoshishapow/kernels/toolchains/cortex_a15/bin/arm-cortex_a15-linux-gnueabihf-"
 kerneltype="zImage"
 output="../out/bacon"
@@ -41,6 +41,7 @@ do
 case "$cchoice" in
 	y|Y )
 		make clean && make mrproper
+		rm -rf ../out/bacon/files && mkdir ../out/bacon/files
 		rm -rf ozip/boot.img
 		rm -rf arch/arm/boot/"$kerneltype"
 		mkdir -p ozip/system/lib/modules
@@ -113,7 +114,10 @@ if [ -f out/"$kerneltype" ]; then
 	echo "Making dt.img..."
 	echo
 	./dtbToolCM -2 -o out/dt.img -s 2048 -p scripts/dtc/ arch/arm/boot/
-	echo "dt.img created"
+	./dtbToolCM -2 -o ../out/bacon/files/dtb -s 2048 -p scripts/dtc/ arch/arm/boot/
+	cp out/dt.img ../out/bacon/files
+	cp out/"$kerneltype" ../out/bacon/files
+	echo "dt.img created and files copied..."
 else
 	echo "No build found..."
 	exit 0;
@@ -124,7 +128,7 @@ echo
 if [ -f out/"$kerneltype" ]; then
 	echo "Making boot.img..."
 	echo
-	./mkbootimg --kernel out/"$kerneltype" --ramdisk resources/initramfs.img --cmdline "$cmdline" --base $base --pagesize $ps --ramdisk_offset $ramdisk_offset --tags_offset $tags_offset --dt out/dt.img --output ozip/boot.img
+	mkbootimg --kernel out/"$kerneltype" --ramdisk resources/initramfs.img --cmdline "$cmdline" --base $base --pagesize $ps --ramdisk_offset $ramdisk_offset --tags_offset $tags_offset --dt out/dt.img --output ozip/boot.img
 else
 	echo "No $kerneltype found..."
 	exit 0;
@@ -134,6 +138,7 @@ if [ -f arch/arm/boot/"$kerneltype" ]; then
 	rm -rf ozip/system
 	mkdir -p ozip/system/lib/modules
 	find . -name "*.ko" -exec cp {} ozip/system/lib/modules \;
+	cp ozip/system/lib/modules/"*.ko" ../out/bacon/files
 	cd ozip
 	zip -r ../$buildname.zip .
 	mv ../$buildname.zip ../$output
