@@ -14,7 +14,7 @@ echo ' |  |  |  ||  _   ||  __|| |___ | || __ || __|'
 echo ' |  |  |  || |_|  || |__ |  _  || || || || __|'
 echo ' |__|__|__||____|_||____||_| |_||_||_||_||___|'
 echo
-echo 'Compile Script by YoshiShaPow        '
+echo '        Compile Script by YoshiShaPow        '
 
 # Tuneables
 buildname="TGM-Lollipop-v1.0.0"
@@ -90,6 +90,7 @@ DATE_START=$(date +"%s")
 
 while read -p "Do you want to build (y/n)? " cchoice
 do
+echo
 case "$cchoice" in
 	y|Y )
 		make -j$jobs
@@ -128,7 +129,8 @@ echo
 if [ -f out/"$kerneltype" ]; then
 	echo "Making boot.img..."
 	echo
-	mkbootimg --kernel out/"$kerneltype" --ramdisk resources/initramfs.img --cmdline "$cmdline" --base $base --pagesize $ps --ramdisk_offset $ramdisk_offset --tags_offset $tags_offset --dt out/dt.img --output ozip/boot.img
+	./mkbootimg --kernel out/"$kerneltype" --ramdisk resources/initramfs.img --cmdline "$cmdline" --base $base --pagesize $ps --ramdisk_offset $ramdisk_offset --tags_offset $tags_offset --dt out/dt.img --output ozip/boot.img
+	cp ozip/boot.img ../out/bacon/files
 else
 	echo "No $kerneltype found..."
 	exit 0;
@@ -136,9 +138,6 @@ fi
 
 if [ -f arch/arm/boot/"$kerneltype" ]; then
 	rm -rf ozip/system
-	mkdir -p ozip/system/lib/modules
-	find . -name "*.ko" -exec cp {} ozip/system/lib/modules \;
-	cp ozip/system/lib/modules/"*.ko" ../out/bacon/files
 	cd ozip
 	zip -r ../$buildname.zip .
 	mv ../$buildname.zip ../$output
