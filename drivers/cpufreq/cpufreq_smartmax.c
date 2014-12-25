@@ -280,15 +280,15 @@ static unsigned int min_sampling_rate;
 #define MIN_SAMPLING_RATE_RATIO			(2)
 #define MICRO_FREQUENCY_MIN_SAMPLE_RATE		(10000)
 
-static int cpufreq_governor_smartmax_eps(struct cpufreq_policy *policy,
+static int cpufreq_governor_smartmax(struct cpufreq_policy *policy,
 		unsigned int event);
 
-#ifndef CONFIG_CPU_FREQ_DEFAULT_GOV_SMARTMAX_EPS
+#ifndef CONFIG_CPU_FREQ_DEFAULT_GOV_SMARTMAX
 static
 #endif
-struct cpufreq_governor cpufreq_gov_smartmax_eps = { 
-    .name = "smartmax_eps", 
-    .governor = cpufreq_governor_smartmax_eps, 
+struct cpufreq_governor cpufreq_gov_smartmax = { 
+    .name = "smartmax", 
+    .governor = cpufreq_governor_smartmax, 
     .max_transition_latency = TRANSITION_LATENCY_LIMIT, 
     .owner = THIS_MODULE,
     };
@@ -1040,7 +1040,7 @@ static struct attribute * smartmax_attributes[] = {
 
 static struct attribute_group smartmax_attr_group = { 
 	.attrs = smartmax_attributes, 
-	.name = "smartmax_eps", 
+	.name = "smartmax", 
 	};
 
 static int cpufreq_smartmax_boost_task(void *data) {
@@ -1212,12 +1212,12 @@ static struct input_handler dbs_input_handler = {
 	.event = smartmax_input_event,
 	.connect = dbs_input_connect, 
 	.disconnect = dbs_input_disconnect,
-	.name = "cpufreq_smartmax_eps", 
+	.name = "cpufreq_smartmax", 
 	.id_table = dbs_ids, 
 	};
 #endif
 
-static int cpufreq_governor_smartmax_eps(struct cpufreq_policy *new_policy,
+static int cpufreq_governor_smartmax(struct cpufreq_policy *new_policy,
 		unsigned int event) {
 	unsigned int cpu = new_policy->cpu;
 	int rc;
@@ -1394,10 +1394,10 @@ static int __init cpufreq_smartmax_init(void) {
 		mutex_init(&this_smartmax->timer_mutex);
 	}
 
-	return cpufreq_register_governor(&cpufreq_gov_smartmax_eps);
+	return cpufreq_register_governor(&cpufreq_gov_smartmax);
 }
 
-#ifdef CONFIG_CPU_FREQ_DEFAULT_GOV_SMARTMAX_EPS
+#ifdef CONFIG_CPU_FREQ_DEFAULT_GOV_SMARTMAX
 fs_initcall(cpufreq_smartmax_init);
 #else
 module_init(cpufreq_smartmax_init);
@@ -1407,7 +1407,7 @@ static void __exit cpufreq_smartmax_exit(void) {
 	unsigned int i;
 	struct smartmax_info_s *this_smartmax;
 
-	cpufreq_unregister_governor(&cpufreq_gov_smartmax_eps);
+	cpufreq_unregister_governor(&cpufreq_gov_smartmax);
 
 	for_each_possible_cpu(i)
 	{
