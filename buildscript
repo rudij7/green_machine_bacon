@@ -17,7 +17,7 @@ echo
 echo '        Compile Script by YoshiShaPow        '
 
 # Tuneables
-buildname="TGM-bacon-lollipop-v1.0.0"
+buildname="TGM-bacon-lollipop-v1.0.5"
 defconfig="tgm_bacon_defconfig"
 jobs="6"
 toolchain="/home/yoshishapow/kernels/toolchains/cortex_a15/bin/arm-cortex_a15-linux-gnueabihf-"
