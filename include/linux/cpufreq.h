@@ -326,6 +326,8 @@ int cpufreq_update_policy(unsigned int cpu);
 #ifdef CONFIG_CPU_FREQ
 /* query the current CPU frequency (in kHz). If zero, cpufreq couldn't detect it */
 unsigned int cpufreq_get(unsigned int cpu);
+unsigned int cpufreq_quick_get_max(unsigned int cpu);
+unsigned int cpufreq_quick_get_util(unsigned int cpu);
 #else
 static inline unsigned int cpufreq_get(unsigned int cpu)
 {
@@ -343,6 +345,10 @@ static inline unsigned int cpufreq_quick_get(unsigned int cpu)
 	return 0;
 }
 static inline unsigned int cpufreq_quick_get_max(unsigned int cpu)
+{
+	return 0;
+}
+static inline unsigned int cpufreq_quick_get_util(unsigned int cpu);
 {
 	return 0;
 }
@@ -387,6 +393,9 @@ extern struct cpufreq_governor cpufreq_gov_optimax;
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_INTELLIMM)
 extern struct cpufreq_governor cpufreq_gov_intellimm;
 #define CPUFREQ_DEFAULT_GOVERNOR (&cpufreq_gov_intellimm)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_BADASS)
+extern struct cpufreq_governor cpufreq_gov_badass;
+#define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_badass)
 #endif
 
 
