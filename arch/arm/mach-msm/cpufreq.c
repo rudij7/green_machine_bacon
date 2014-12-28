@@ -208,11 +208,14 @@ static int msm_cpufreq_init(struct cpufreq_policy *policy)
 	policy->cur = table[index].frequency;
 #endif
 	cpufreq_frequency_table_get_attr(table, policy->cpu);
+
+
 #ifdef CONFIG_MSM_CPU_FREQ_SET_MIN_MAX
-	/* set safe default min and max speeds */
-	policy->max = CONFIG_MSM_CPU_FREQ_MAX;
-	policy->min = CONFIG_MSM_CPU_FREQ_MIN;
+        /* set safe default min and max speeds */
+        policy->max = CONFIG_MSM_CPU_FREQ_MAX;
+        policy->min = CONFIG_MSM_CPU_FREQ_MIN;
 #endif
+
 	return 0;
 }
 
