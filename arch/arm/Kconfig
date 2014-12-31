@@ -1669,9 +1669,9 @@ config ARM_CPU_TOPOLOGY
 	depends on SMP && CPU_V7
 	default y
 	help
-	 Multi-core scheduler support improves the CPU scheduler's decision
-	 making when dealing with multi-core CPU chips at a cost of slightly
-	 increased overhead in some places. If unsure say N here.
+	  Support ARM cpu topology definition. The MPIDR register defines
+	  affinity between processors which is then used to describe the cpu
+	  topology of an ARM System.
 
 config SCHED_MC
 	bool "Multi-core scheduler support"

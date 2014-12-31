@@ -33,9 +33,6 @@
 #include <asm/cputype.h>
 #include <asm/exception.h>
 #include <asm/idmap.h>
-#ifdef CONFIG_ARM_CPU_TOPOLOGY
-#include <asm/topology.h>
-#endif
 #include <asm/topology.h>
 #include <asm/mmu_context.h>
 #include <asm/pgtable.h>
@@ -317,9 +314,7 @@ void __ref cpu_die(void)
 static void __cpuinit smp_store_cpu_info(unsigned int cpuid)
 {
 	struct cpuinfo_arm *cpu_info = &per_cpu(cpu_data, cpuid);
-#ifdef CONFIG_ARM_CPU_TOPOLOGY
-	store_cpu_topology(cpuid);
-#endif	
+
 	cpu_info->loops_per_jiffy = loops_per_jiffy;
 
 	store_cpu_topology(cpuid);
@@ -416,9 +411,9 @@ void __init smp_prepare_cpus(unsigned int max_cpus)
 {
 	unsigned int ncores = num_possible_cpus();
 
-#ifdef CONFIG_ARM_CPU_TOPOLOGY
 	init_cpu_topology();
-#endif
+
+	smp_store_cpu_info(smp_processor_id());
 
 	/*
 	 * are we trying to boot more cores than exist?
