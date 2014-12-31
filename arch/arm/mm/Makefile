@@ -2,8 +2,6 @@
 # Makefile for the linux arm-specific parts of the memory manager.
 #
 
-KBUILD_CFLAGS	+=-O3
-
 obj-y				:= dma-mapping.o extable.o fault.o init.o \
 				   iomap.o
 

@@ -11,8 +11,6 @@
 # Copyright (C) 1995-2002 Russell King
 #
 
-
-KBUILD_CFLAGS	+=-O3
 ifneq ($(MACHINE),)
 include $(srctree)/$(MACHINE)/Makefile.boot
 endif

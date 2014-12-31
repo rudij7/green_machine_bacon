@@ -4,8 +4,6 @@
 # Copyright (C) 1995-2000 Russell King
 #
 
-KBUILD_CFLAGS	+=-O3
-
 lib-y		:= backtrace.o changebit.o csumipv6.o csumpartial.o   \
 		   csumpartialcopy.o csumpartialcopyuser.o clearbit.o \
 		   delay.o delay-loop.o findbit.o memchr.o memcpy.o   \
