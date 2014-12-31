@@ -1,7 +1,12 @@
+KBUILD_CFLAGS	+=-O3
+
 # CPUfreq core
 obj-$(CONFIG_CPU_FREQ)			+= cpufreq.o cpu-boost.o
 # CPUfreq stats
 obj-$(CONFIG_CPU_FREQ_STAT)             += cpufreq_stats.o
+
+# CPU-boost framework
+obj-$(CONFIG_CPU_BOOST_FRAMEWORK)	+= cpu_boost.o
 
 # CPUfreq governors 
 obj-$(CONFIG_CPU_FREQ_GOV_PERFORMANCE)	+= cpufreq_performance.o
