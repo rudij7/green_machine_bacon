@@ -24,6 +24,7 @@
 #include <linux/platform_device.h>
 #include <linux/module.h>
 #include <linux/device.h>
+#include "acpuclock.h"
 
 #define DEBUG 0
 
@@ -88,7 +89,7 @@ extern unsigned int get_rq_info(void);
 unsigned int state = MSM_MPDEC_DISABLED;
 
 static unsigned long get_rate(int cpu) {
-	return cpufreq_get(cpu);
+	return msm_cpufreq_get_freq(cpu);
 }
 
 static int get_slowest_cpu(void) {
