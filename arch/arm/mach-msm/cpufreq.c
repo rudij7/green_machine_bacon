@@ -176,7 +176,7 @@ static int msm_cpufreq_init(struct cpufreq_policy *policy)
 #else
 #ifdef CONFIG_ARCH_MSM8974
 	/* Predefine max/min frequencies used for device boot */
-	policy->max = 2457600;
+	policy->max = 2880000;
 	policy->min = 268800;
 #endif
 #endif
